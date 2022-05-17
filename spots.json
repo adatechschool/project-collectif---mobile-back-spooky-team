@@ -1,0 +1,99 @@
+{"spots" : [ 
+  {
+    "id": "rec0E1RdChv96cckv",
+    "imageName": "https://www.culture-games.com/wp-content/uploads/post/Castlevania-image-640x402.jpg",
+    "description": "Blabl",
+    "city": "Contrée des Ténèbre",
+    "longitude": 0,
+    "country": "Transylvani",
+    "latitude": 0,
+    "name": "Castelvania"
+  },
+  {
+    "id": "rec1U5rUXjWjXXUYA",
+
+    "imageName": "https://img.ev.mu/images/attractions/3018/960x640/3947.jpg",
+    "description": "Chez Vlad",
+    "city": "Brasov",
+    "longitude": 25.36725,
+    "country": "Roumanie",
+    "latitude": 45.5149,
+    "name": "Château de Bran"
+  },
+  {
+    "id": "rec3TtF4kiFAizgV6",
+
+    "imageName": "https://www.civitatis.com/blog/wp-content/uploads/2021/10/bhangarh-inde-1-1280x853.jpg",
+    "description": "Paranormal Activity Detected Here ! ",
+    "city": "Bhangarh",
+    "longitude": 76.285994,
+    "country": "Inde",
+    "latitude": 27.096319,
+    "name": "Fort de Bhangarh"
+  },
+  {
+    "id": "rec85xgalpz6V3CGn",
+
+    "imageName": "https://www.pariszigzag.fr/wp-content/uploads/2019/04/chapelle-notre-dame-de-la-consolation-paris-zigzag-e1555580740400.jpg",
+    "description": "Un lieu hanté près de chez vous !",
+    "city": "Paris",
+    "longitude": 2.306076577969009,
+    "country": "France",
+    "latitude": 48.865436113194626,
+    "name": "Chapelle Notre Dame de La Consolation"
+  },
+  {
+    "id": "recGiehEmfmocsFqL",
+
+    "imageName": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/112_Ocean_Avenue_%281973%29.jpg/330px-112_Ocean_Avenue_%281973%29.jpg",
+    "description": "Spooky !!",
+    "city": "Amityville",
+    "longitude": -73.414624,
+    "country": "USA",
+    "latitude": 40.66679,
+    "name": "La Maison du Diableuh"
+  },
+  {
+    "id": "recQvBrQYrurwEoVf",
+
+    "imageName": "https://www.civitatis.com/blog/wp-content/uploads/2021/10/ile-poupees-mexique-1280x853.jpg",
+    "description": "Oskour 🥲",
+    "city": "Mexico",
+    "longitude": -99.096553,
+    "country": "Mexique",
+    "latitude": 19.290153,
+    "name": "Ile des poupées"
+  },
+  {
+    "id": "recoac8gmpjU9ndk5",
+    "imageName": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/P1020029_Paris_II_Rues_Saint_Spire-_Sainte-Foy-d%27Alexandrie_reductwk.JPG/1024px-P1020029_Paris_II_Rues_Saint_Spire-_Sainte-Foy-d%27Alexandrie_reductwk.JPG",
+    "description": "attention aux moucherons",
+    "city": "Paris",
+    "longitude": 2.350250046572118,
+    "country": "France",
+    "latitude": 48.868567333172976,
+    "name": "Les locaux de sentiers"
+  },
+  {
+    "id": "rectoil7JUGgzdvA0",
+    "imageName": "F",
+    "description": "School",
+    "city": "Paris",
+    "longitude": 0,
+    "country": "Franc",
+    "latitude": 0,
+    "name": "ADA"
+  },
+  {
+    "id": "recxGz72C5aJS01IC",
+
+    "imageName": "https://static.wikia.nocookie.net/dccu/images/8/86/Atlantis.jpg/revision/latest/scale-to-width-down/350?cb=20190505004037",
+    "description": "Glou glou glou ",
+    "city": "Atlanti",
+    "longitude": 0,
+    "country": "Sous l’Océan ",
+    "latitude": 0,
+    "name": "Atlantis "
+  }
+]
+}
