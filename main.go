@@ -39,7 +39,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 // func createspot(w http.ResponseWriter, r *http.Request) {
-// 	var newspot Spot
+
 // 	reqBody, err := ioutil.ReadAll(r.Body)
 // 	if err != nil {
 // 		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
@@ -62,9 +62,10 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-// func getAllspots(w http.ResponseWriter, r *http.Request) {
-// 	json.NewEncoder(w).Encode(Spots)
-// }
+func getAllspots(w http.ResponseWriter, r *http.Request) {
+	parseJson := parsingJson()
+	json.NewEncoder(w).Encode(parseJson)
+}
 
 // func updatespot(w http.ResponseWriter, r *http.Request) {
 // 	spotID := mux.Vars(r)["id"]
@@ -97,7 +98,8 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-func main() {
+func parsingJson() []Spot {
+
 	// Open our jsonFile
 	jsonFile, err := os.Open("spots.json")
 	// if we os.Open returns an error then handle it
@@ -117,12 +119,16 @@ func main() {
 	// jsonFile's content into 'users' which we defined above
 	json.Unmarshal(byteValue, &spots)
 
-	fmt.Println("tous les spots: ", spots)
+	return spots.Allspots
+}
 
+func main() {
+	parseSpot := parsingJson()
+	fmt.Println(parseSpot)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	// router.HandleFunc("/spot", createspot).Methods("POST")
-	// router.HandleFunc("/spots", getAllspots).Methods("GET")
+	router.HandleFunc("/spots", getAllspots).Methods("GET")
 	// router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
 	// router.HandleFunc("/spots/{id}", updatespot).Methods("PATCH")
 	// router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
