@@ -52,15 +52,17 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(newspot)
 // }
 
-// func getOnespot(w http.ResponseWriter, r *http.Request) {
-// 	spotID := mux.Vars(r)["id"]
+func getOnespot(w http.ResponseWriter, r *http.Request) {
 
-// 	for _, singlespot := range Spots {
-// 		if singlespot.ID == spotID {
-// 			json.NewEncoder(w).Encode(singlespot)
-// 		}
-// 	}
-// }
+	parseJson := parsingJson()
+	spotID := mux.Vars(r)["id"]
+
+	for _, singlespot := range parseJson {
+		if singlespot.ID == spotID {
+			json.NewEncoder(w).Encode(singlespot)
+		}
+	}
+}
 
 func getAllspots(w http.ResponseWriter, r *http.Request) {
 	parseJson := parsingJson()
@@ -129,7 +131,7 @@ func main() {
 	router.HandleFunc("/", homeLink)
 	// router.HandleFunc("/spot", createspot).Methods("POST")
 	router.HandleFunc("/spots", getAllspots).Methods("GET")
-	// router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
+	router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
 	// router.HandleFunc("/spots/{id}", updatespot).Methods("PATCH")
 	// router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", router))
