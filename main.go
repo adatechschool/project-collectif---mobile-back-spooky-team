@@ -26,6 +26,16 @@ type Allspots struct {
 	Allspots []Spot `json:"spots"`
 }
 
+type List struct {
+	List []Shortspot `json:"Shortspot"`
+}
+
+type Shortspot struct {
+	ID        string `json:"id"`
+	ImageName string `json:"imageName"`
+	Name      string `json:"name"`
+}
+
 // var spots = allspots{
 // 	{
 // 		ID:          "1",
@@ -67,6 +77,20 @@ func getOnespot(w http.ResponseWriter, r *http.Request) {
 func getAllspots(w http.ResponseWriter, r *http.Request) {
 	parseJson := parsingJson()
 	json.NewEncoder(w).Encode(parseJson)
+}
+
+func getList(w http.ResponseWriter, r *http.Request) {
+	parseJson := parsingJson()
+	// length  := len(parseJson)
+	var vlist []Shortspot
+	for i, singlespot := range parseJson {
+
+		vlist[i].Name = singlespot.Name
+		vlist[i].ID = singlespot.ID
+		vlist[i].ImageName = singlespot.ImageName
+
+	}
+	json.NewEncoder(w).Encode(vlist)
 }
 
 // func updatespot(w http.ResponseWriter, r *http.Request) {
@@ -132,7 +156,7 @@ func main() {
 	// router.HandleFunc("/spot", createspot).Methods("POST")
 	router.HandleFunc("/spots", getAllspots).Methods("GET")
 	router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
-	// router.HandleFunc("/spots/{id}", updatespot).Methods("PATCH")
+	router.HandleFunc("/list", getList).Methods("GET")
 	// router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
