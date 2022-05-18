@@ -81,8 +81,8 @@ func getAllspots(w http.ResponseWriter, r *http.Request) {
 
 func getList(w http.ResponseWriter, r *http.Request) {
 	parseJson := parsingJson()
-	// length  := len(parseJson)
-	var vlist []Shortspot
+	leng := len(parseJson)
+	vlist := make([]Shortspot, leng)
 	for i, singlespot := range parseJson {
 
 		vlist[i].Name = singlespot.Name
