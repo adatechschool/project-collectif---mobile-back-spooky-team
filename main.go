@@ -67,7 +67,7 @@ func getOnespot(w http.ResponseWriter, r *http.Request) {
 	parseJson := parsingJson()
 	spotID := mux.Vars(r)["id"]
 
-	for _, singlespot := range parseJson {
+	for _, singlespot := range parseJson.Allspots {
 		if singlespot.ID == spotID {
 			json.NewEncoder(w).Encode(singlespot)
 		}
@@ -81,9 +81,9 @@ func getAllspots(w http.ResponseWriter, r *http.Request) {
 
 func getList(w http.ResponseWriter, r *http.Request) {
 	parseJson := parsingJson()
-	leng := len(parseJson)
+	leng := len(parseJson.Allspots)
 	vlist := make([]Shortspot, leng)
-	for i, singlespot := range parseJson {
+	for i, singlespot := range parseJson.Allspots {
 
 		vlist[i].Name = singlespot.Name
 		vlist[i].ID = singlespot.ID
@@ -113,18 +113,36 @@ func getList(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-// func deletespot(w http.ResponseWriter, r *http.Request) {
-// 	spotID := mux.Vars(r)["id"]
+ func deletespot(w http.ResponseWriter, r *http.Request) {
+	 parseJson := parsingJson()
+ 	spotID := mux.Vars(r)["id"]
+	  // une boucle for pour chercher le requin concerné
+	for i, singlespot := range parseJson.Allspots {
+		if singlespot.ID == spotID {
+			// on supprime le requin concerné en décalant les valeurs du tableau vers la gauche 
+			// à partir de l'ID trouvé
+			parseJson.Allspots = append(parseJson.Allspots[:i], parseJson.Allspots[i+1:]...)
+			fmt.Fprintf(w, "The spots with ID %v has been deleted successfully", spotID)
+		}
+	}
 
-// 	for i, singlespot := range spots {
-// 		if singlespot.ID == spotID {
-// 			spots = append(spots[:i], spots[i+1:]...)
-// 			fmt.Fprintf(w, "The spot with ID %v has been deleted successfully", spotID)
-// 		}
-// 	}
-// }
+	// afin de pouvoir l'écrire dans le Json, on Marshal notre parseJson 
+	modifJson, err := json.Marshal(parseJson)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier sharks.json grace à ioutil 
+	err = ioutil.WriteFile("spots.json", modifJson, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-func parsingJson() []Spot {
+ 	
+ 		}
+
+ 
+
+func parsingJson() Allspots {
 
 	// Open our jsonFile
 	jsonFile, err := os.Open("spots.json")
@@ -145,7 +163,7 @@ func parsingJson() []Spot {
 	// jsonFile's content into 'users' which we defined above
 	json.Unmarshal(byteValue, &spots)
 
-	return spots.Allspots
+	return spots
 }
 
 func main() {
@@ -157,6 +175,6 @@ func main() {
 	router.HandleFunc("/spots", getAllspots).Methods("GET")
 	router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
 	router.HandleFunc("/list", getList).Methods("GET")
-	// router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
+	router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
