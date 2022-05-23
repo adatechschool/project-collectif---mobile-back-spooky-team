@@ -69,6 +69,16 @@
       "country": "Sous l’Océan ",
       "latitude": 0,
       "name": "Atlantis "
+    },
+    {
+      "id": "tettgih8742",
+      "imageName": "https://www.pariszigzag.fr/wp-content/uploads/2019/04/avenue-frochot-maison-hantee-paris-zigzag.jpg",
+      "description": "La maison la plus hantée de Paris !",
+      "city": "Paris",
+      "longitude": 0,
+      "country": "France",
+      "latitude": 0,
+      "name": "1 avenue Frochot"
     }
   ]
 }

@@ -48,19 +48,38 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome home!")
 }
 
-// func createspot(w http.ResponseWriter, r *http.Request) {
+func createspot(w http.ResponseWriter, r *http.Request) {
+	// on déclare une variable de type Shark qui recevra les infos de notre nouveau requin 
+	var newspot Spot
+	// on récup de Json parsé 
+	parseJson := parsingJson()
+	// on récup le corps de la requête, en affichant une erreur si c'est mal formaté et on le 
+	// Unmarshal afin de le stocker dans notre variable newshark 
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the spot informations in order to update")
+	}
 
-// 	reqBody, err := ioutil.ReadAll(r.Body)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
-// 	}
+	json.Unmarshal(reqBody, &newspot)
 
-// 	json.Unmarshal(reqBody, &newspot)
-// 	spots = append(Spots, newspot)
-// 	w.WriteHeader(http.StatusCreated)
+	// on ajoute newShark au tableau de requins dans notre objet parseJson 
+	// mais attention à ce stade là, rien n'est encore écrit dans notre fichier Json
+	parseJson.Allspots = append(parseJson.Allspots, newspot)
 
-// 	json.NewEncoder(w).Encode(newspot)
-// }
+	fmt.Println(parseJson)
+
+	// afin de pouvoir l'écrire dans le Json, on Marshal notre parseJson 
+	modifJson, err := json.Marshal(parseJson)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier sharks.json grace à ioutil 
+	err = ioutil.WriteFile("spots.json", modifJson, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
 
 func getOnespot(w http.ResponseWriter, r *http.Request) {
 
@@ -114,13 +133,13 @@ func getList(w http.ResponseWriter, r *http.Request) {
 // }
 
  func deletespot(w http.ResponseWriter, r *http.Request) {
-	 parseJson := parsingJson()
+	parseJson := parsingJson()
  	spotID := mux.Vars(r)["id"]
-	  // une boucle for pour chercher le requin concerné
+	  // une boucle for pour chercher le spot concerné
 	for i, singlespot := range parseJson.Allspots {
 		if singlespot.ID == spotID {
-			// on supprime le requin concerné en décalant les valeurs du tableau vers la gauche 
-			// à partir de l'ID trouvé
+		// on supprime le spot concerné en décalant les valeurs du tableau vers la gauche 
+		// à partir de l'ID trouvé
 			parseJson.Allspots = append(parseJson.Allspots[:i], parseJson.Allspots[i+1:]...)
 			fmt.Fprintf(w, "The spots with ID %v has been deleted successfully", spotID)
 		}
@@ -131,16 +150,16 @@ func getList(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier sharks.json grace à ioutil 
+	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier spots.json grace à ioutil 
 	err = ioutil.WriteFile("spots.json", modifJson, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 
- 	
- 		}
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(newspot)
 
- 
+}
 
 func parsingJson() Allspots {
 
@@ -171,7 +190,7 @@ func main() {
 	fmt.Println(parseSpot)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
-	// router.HandleFunc("/spot", createspot).Methods("POST")
+	router.HandleFunc("/spot", createspot).Methods("POST")
 	router.HandleFunc("/spots", getAllspots).Methods("GET")
 	router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
 	router.HandleFunc("/list", getList).Methods("GET")
