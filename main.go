@@ -49,12 +49,12 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func createspot(w http.ResponseWriter, r *http.Request) {
-	// on déclare une variable de type Shark qui recevra les infos de notre nouveau requin 
+	// on déclare une variable de type Shark qui recevra les infos de notre nouveau requin
 	var newspot Spot
-	// on récup de Json parsé 
+	// on récup de Json parsé
 	parseJson := parsingJson()
-	// on récup le corps de la requête, en affichant une erreur si c'est mal formaté et on le 
-	// Unmarshal afin de le stocker dans notre variable newshark 
+	// on récup le corps de la requête, en affichant une erreur si c'est mal formaté et on le
+	// Unmarshal afin de le stocker dans notre variable newshark
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Kindly enter data with the spot informations in order to update")
@@ -62,18 +62,18 @@ func createspot(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &newspot)
 
-	// on ajoute newShark au tableau de requins dans notre objet parseJson 
+	// on ajoute newShark au tableau de requins dans notre objet parseJson
 	// mais attention à ce stade là, rien n'est encore écrit dans notre fichier Json
 	parseJson.Allspots = append(parseJson.Allspots, newspot)
 
 	fmt.Println(parseJson)
 
-	// afin de pouvoir l'écrire dans le Json, on Marshal notre parseJson 
+	// afin de pouvoir l'écrire dans le Json, on Marshal notre parseJson
 	modifJson, err := json.Marshal(parseJson)
 	if err != nil {
 		fmt.Println(err)
 	}
-	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier sharks.json grace à ioutil 
+	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier sharks.json grace à ioutil
 	err = ioutil.WriteFile("spots.json", modifJson, 0644)
 	if err != nil {
 		log.Fatal(err)
@@ -112,52 +112,65 @@ func getList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(vlist)
 }
 
-// func updatespot(w http.ResponseWriter, r *http.Request) {
-// 	spotID := mux.Vars(r)["id"]
-// 	var updatedspot Spot
-
-// 	reqBody, err := ioutil.ReadAll(r.Body)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
-// 	}
-// 	json.Unmarshal(reqBody, &updatedspot)
-
-// 	for i, singlespot := range Spots {
-// 		if singlespot.ID == spotID {
-// 			singlespot.Name = updatedspot.Name
-// 			singlespot.Description = updatedspot.Description
-// 			Spots = append(Spots[:i], singlespot)
-// 			json.NewEncoder(w).Encode(singlespot)
-// 		}
-// 	}
-// }
-
- func deletespot(w http.ResponseWriter, r *http.Request) {
+func updatespot(w http.ResponseWriter, r *http.Request) {
+	spotID := mux.Vars(r)["id"]
+	var updatedspot Spot
 	parseJson := parsingJson()
- 	spotID := mux.Vars(r)["id"]
-	  // une boucle for pour chercher le spot concerné
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
+	}
+	json.Unmarshal(reqBody, &updatedspot)
+
 	for i, singlespot := range parseJson.Allspots {
 		if singlespot.ID == spotID {
-		// on supprime le spot concerné en décalant les valeurs du tableau vers la gauche 
-		// à partir de l'ID trouvé
+			singlespot.ImageName = updatedspot.ImageName
+			singlespot.Description = updatedspot.Description
+			singlespot.City = updatedspot.City
+			singlespot.Longitude = updatedspot.Longitude
+			singlespot.Country = updatedspot.Country
+			singlespot.Latitude = updatedspot.Latitude
+			singlespot.Name = updatedspot.Name
+			parseJson = append(parseJson.Allspots[:i], singlespot)
+			json.NewEncoder(w).Encode(singlespot)
+		}
+	}
+
+	modifJson, err := json.Marshal(parseJson)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = ioutil.WriteFile("spots.json", modifJson, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func deletespot(w http.ResponseWriter, r *http.Request) {
+	parseJson := parsingJson()
+	spotID := mux.Vars(r)["id"]
+	// une boucle for pour chercher le spot concerné
+	for i, singlespot := range parseJson.Allspots {
+		if singlespot.ID == spotID {
+			// on supprime le spot concerné en décalant les valeurs du tableau vers la gauche
+			// à partir de l'ID trouvé
 			parseJson.Allspots = append(parseJson.Allspots[:i], parseJson.Allspots[i+1:]...)
 			fmt.Fprintf(w, "The spots with ID %v has been deleted successfully", spotID)
 		}
 	}
 
-	// afin de pouvoir l'écrire dans le Json, on Marshal notre parseJson 
+	// afin de pouvoir l'écrire dans le Json, on Marshal notre parseJson
 	modifJson, err := json.Marshal(parseJson)
 	if err != nil {
 		fmt.Println(err)
 	}
-	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier spots.json grace à ioutil 
+	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier spots.json grace à ioutil
 	err = ioutil.WriteFile("spots.json", modifJson, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newspot)
 
 }
 
