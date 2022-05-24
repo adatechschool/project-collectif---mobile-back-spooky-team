@@ -132,7 +132,7 @@ func updatespot(w http.ResponseWriter, r *http.Request) {
 			singlespot.Country = updatedspot.Country
 			singlespot.Latitude = updatedspot.Latitude
 			singlespot.Name = updatedspot.Name
-			parseJson = append(parseJson.Allspots[:i], singlespot)
+			parseJson.Allspots[i] = singlespot
 			json.NewEncoder(w).Encode(singlespot)
 		}
 	}
