@@ -74,36 +74,73 @@ func createspot(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// func getOnespot(w http.ResponseWriter, r *http.Request) {
+func getOnespot(w http.ResponseWriter, r *http.Request) {
+	var spot Spot
+	spotID := mux.Vars(r)["id"]
 
-// 	parseJson := parsingJson()
-// 	spotID := mux.Vars(r)["id"]
+	stmt, err := db.Query("SELECT * FROM spot WHERE idspot = ?", spotID)
 
-// 	for _, singlespot := range parseJson.Allspots {
-// 		if singlespot.ID == spotID {
-// 			json.NewEncoder(w).Encode(singlespot)
-// 		}
-// 	}
-// }
+	if err != nil {
+		panic(err.Error())
+	}
 
-// func getAllspots(w http.ResponseWriter, r *http.Request) {
-// 	parseJson := parsingJson()
-// 	json.NewEncoder(w).Encode(parseJson)
-// }
+	defer stmt.Close()
 
-// func getList(w http.ResponseWriter, r *http.Request) {
-// 	parseJson := parsingJson()
-// 	leng := len(parseJson.Allspots)
-// 	vlist := make([]Shortspot, leng)
-// 	for i, singlespot := range parseJson.Allspots {
+	for stmt.Next() {
+		err := stmt.Scan(&spot.ID, &spot.Name, &spot.Description, &spot.City, &spot.Country, &spot.Longitude, &spot.Latitude, &spot.ImageURL)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
 
-// 		vlist[i].Name = singlespot.Name
-// 		vlist[i].ID = singlespot.ID
-// 		vlist[i].ImageName = singlespot.ImageName
+	json.NewEncoder(w).Encode(spot)
+}
 
-// 	}
-// 	json.NewEncoder(w).Encode(vlist)
-// }
+func getAllspots(w http.ResponseWriter, r *http.Request) {
+	var spots []Spot
+
+	stmt, err := db.Query("SELECT * FROM spot")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer stmt.Close()
+
+	for stmt.Next() {
+		var spot Spot
+		err := stmt.Scan(&spot.ID, &spot.Name, &spot.Description, &spot.City, &spot.Country, &spot.Longitude, &spot.Latitude, &spot.ImageURL)
+		if err != nil {
+			panic(err.Error())
+		}
+		spots = append(spots, spot)
+	}
+
+	json.NewEncoder(w).Encode(spots)
+}
+
+func getList(w http.ResponseWriter, r *http.Request) {
+	var spots []Shortspot
+
+	stmt, err := db.Query("SELECT idspot, name, image_url FROM spot")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer stmt.Close()
+
+	for stmt.Next() {
+		var spot Shortspot
+		err := stmt.Scan(&spot.ID, &spot.Name, &spot.ImageURL)
+		if err != nil {
+			panic(err.Error())
+		}
+		spots = append(spots, spot)
+	}
+
+	json.NewEncoder(w).Encode(spots)
+}
 
 // func updatespot(w http.ResponseWriter, r *http.Request) {
 // 	spotID := mux.Vars(r)["id"]
@@ -185,9 +222,9 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/spot", createspot).Methods("POST")
-	// router.HandleFunc("/spots", getAllspots).Methods("GET")
-	// router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
-	// router.HandleFunc("/list", getList).Methods("GET")
+	router.HandleFunc("/spots", getAllspots).Methods("GET")
+	router.HandleFunc("/spot/{id}", getOnespot).Methods("GET")
+	router.HandleFunc("/list", getList).Methods("GET")
 	// router.HandleFunc("/spots/{id}", updatespot).Methods("PATCH")
 	// router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", router))
