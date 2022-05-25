@@ -23,31 +23,12 @@ type Spot struct {
 	ImageURL    *string  `json:"image_url"`
 }
 
-// type Allspots struct {
-// 	Allspots []Spot `json:"spots"`
-// }
-
-// type List struct {
-// 	List []Shortspot `json:"Shortspot"`
-// }
-
 type Shortspot struct {
 	ID       *string `json:"idspot"`
 	Name     *string `json:"name"`
 	ImageURL *string `json:"image_URL"`
 }
 
-// var spots = allspots{
-// 	{
-// 		ID:          "1",
-// 		Name:       "Introduction to Golang",
-// 		Description: "Come join us for a chance to learn how golang works and get to spotually try it out",
-// 	},
-// }
-
-// func homeLink(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Fprintf(w, "Welcome home!")
-// }
 
 func createspot(w http.ResponseWriter, r *http.Request) {
 	// on déclare une variable de type Shark qui recevra les infos de notre nouveau requin
@@ -152,56 +133,14 @@ func getList(w http.ResponseWriter, r *http.Request) {
 // 		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
 // 	}
 // 	json.Unmarshal(reqBody, &updatedspot)
-
-// 	for i, singlespot := range parseJson.Allspots {
-// 		if singlespot.ID == spotID {
-// 			singlespot.ImageName = updatedspot.ImageName
-// 			singlespot.Description = updatedspot.Description
-// 			singlespot.City = updatedspot.City
-// 			singlespot.Longitude = updatedspot.Longitude
-// 			singlespot.Country = updatedspot.Country
-// 			singlespot.Latitude = updatedspot.Latitude
-// 			singlespot.Name = updatedspot.Name
-// 			parseJson.Allspots[i] = singlespot
-// 			json.NewEncoder(w).Encode(singlespot)
-// 		}
-// 	}
-
-// 	modifJson, err := json.Marshal(parseJson)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	err = ioutil.WriteFile("spots.json", modifJson, 0644)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
 // }
 
 // func deletespot(w http.ResponseWriter, r *http.Request) {
-// 	parseJson := parsingJson()
 // 	spotID := mux.Vars(r)["id"]
-// 	// une boucle for pour chercher le spot concerné
-// 	for i, singlespot := range parseJson.Allspots {
-// 		if singlespot.ID == spotID {
-// 			// on supprime le spot concerné en décalant les valeurs du tableau vers la gauche
-// 			// à partir de l'ID trouvé
-// 			parseJson.Allspots = append(parseJson.Allspots[:i], parseJson.Allspots[i+1:]...)
-// 			fmt.Fprintf(w, "The spots with ID %v has been deleted successfully", spotID)
-// 		}
+// 	
+// 	fmt.Fprintf(w, "The spots with ID %v has been deleted successfully", spotID)
 // 	}
 
-// 	// afin de pouvoir l'écrire dans le Json, on Marshal notre parseJson
-// 	modifJson, err := json.Marshal(parseJson)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	// on écrit notre modifJson (parseJson "marshalisé") dans le fichier spots.json grace à ioutil
-// 	err = ioutil.WriteFile("spots.json", modifJson, 0644)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// }
 
 // // on crée un objet db et un objet erreur
 var db *sql.DB
