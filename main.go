@@ -112,25 +112,41 @@ func getList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(vlist)
 }
 
-// func updatespot(w http.ResponseWriter, r *http.Request) {
-// 	spotID := mux.Vars(r)["id"]
-// 	var updatedspot Spot
+func updatespot(w http.ResponseWriter, r *http.Request) {
+	spotID := mux.Vars(r)["id"]
+	var updatedspot Spot
+	parseJson := parsingJson()
 
-// 	reqBody, err := ioutil.ReadAll(r.Body)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
-// 	}
-// 	json.Unmarshal(reqBody, &updatedspot)
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
+	}
+	json.Unmarshal(reqBody, &updatedspot)
 
-// 	for i, singlespot := range Spots {
-// 		if singlespot.ID == spotID {
-// 			singlespot.Name = updatedspot.Name
-// 			singlespot.Description = updatedspot.Description
-// 			Spots = append(Spots[:i], singlespot)
-// 			json.NewEncoder(w).Encode(singlespot)
-// 		}
-// 	}
-// }
+	for i, singlespot := range parseJson.Allspots {
+		if singlespot.ID == spotID {
+			singlespot.ImageName = updatedspot.ImageName
+			singlespot.Description = updatedspot.Description
+			singlespot.City = updatedspot.City
+			singlespot.Longitude = updatedspot.Longitude
+			singlespot.Country = updatedspot.Country
+			singlespot.Latitude = updatedspot.Latitude
+			singlespot.Name = updatedspot.Name
+			parseJson.Allspots[i] = singlespot
+			json.NewEncoder(w).Encode(singlespot)
+		}
+	}
+
+	modifJson, err := json.Marshal(parseJson)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = ioutil.WriteFile("spots.json", modifJson, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
  func deletespot(w http.ResponseWriter, r *http.Request) {
 	parseJson := parsingJson()
@@ -155,45 +171,32 @@ func getList(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newspot)
-
 }
 
-func parsingJson() Allspots {
-
-	// Open our jsonFile
-	jsonFile, err := os.Open("spots.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("Successfully Opened spots.json")
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	// we initialize our Users array
-	var spots Allspots
-
-	// we unmarshal our byteArray which contains our
-	// jsonFile's content into 'users' which we defined above
-	json.Unmarshal(byteValue, &spots)
-
-	return spots
-}
+// on crée un objet db et un objet erreur 
+var db *sql.DB
+var err error
 
 func main() {
-	parseSpot := parsingJson()
-	fmt.Println(parseSpot)
+	// on ouvre la connection à la bdd et on utilise defer pour lui demander de rester ouverte 
+	// jusqu'à ce que qu'on ait fini.
+	// attention "Root5003" est le mot de passe de mon serveur SQl, à remplacer par le votre
+	// dans l'idéal ce serait une variable d'env 
+	db, err = sql.Open("mysql", "root:Root5003@tcp(127.0.0.1:3306)/sharks")
+  if err != nil {
+    panic(err.Error())
+  } else {
+	  fmt.Println("Opened DB !")
+	}
+  defer db.Close()
+
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/spot", createspot).Methods("POST")
 	router.HandleFunc("/spots", getAllspots).Methods("GET")
 	router.HandleFunc("/spots/{id}", getOnespot).Methods("GET")
 	router.HandleFunc("/list", getList).Methods("GET")
+	router.HandleFunc("/spots/{id}", updatespot).Methods("PATCH")
 	router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
