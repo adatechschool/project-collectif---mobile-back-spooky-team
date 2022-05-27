@@ -31,11 +31,11 @@ type Shortspot struct {
 
 
 func createspot(w http.ResponseWriter, r *http.Request) {
-	// on déclare une variable de type Shark qui recevra les infos de notre nouveau requin
+	// on déclare une variable de type spot qui recevra les infos de notre nouveau requin
 	var newspot Spot
 
 	// on récup le corps de la requête, en affichant une erreur si c'est mal formaté et on le
-	// Unmarshal afin de le stocker dans notre variable newshark
+	// Unmarshal afin de le stocker dans notre variable newspot
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Kindly enter data with the spot informations in order to update")
@@ -123,23 +123,42 @@ func getList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(spots)
 }
 
-// func updatespot(w http.ResponseWriter, r *http.Request) {
-// 	spotID := mux.Vars(r)["id"]
-// 	var updatedspot Spot
-// 	parseJson := parsingJson()
+func updatespot(w http.ResponseWriter, r *http.Request) {
+	spotID := mux.Vars(r)["id"]
+	var spot Spot
 
-// 	reqBody, err := ioutil.ReadAll(r.Body)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
-// 	}
-// 	json.Unmarshal(reqBody, &updatedspot)
-// }
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the spot Name and description only in order to update")
+	}
+	json.Unmarshal(reqBody, &spot)
 
-// func deletespot(w http.ResponseWriter, r *http.Request) {
-// 	spotID := mux.Vars(r)["id"]
-// 	
-// 	fmt.Fprintf(w, "The spots with ID %v has been deleted successfully", spotID)
-// 	}
+	// on prépare la requête SQL avec des placeholders "?"
+	stmt, err := db.Prepare("UPDATE spots SET name = ?, description = ?, city = ?, country = ?, longitude = ?, latitude = ?, image_url = ? WHERE idspot = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// on exécute la requête SQL, les valeurs passées remplacent les placeholders 
+	_, err = stmt.Exec(spot.Name, spot.Description, spot.City, spot.Country, spot.Longitude, spot.Latitude, spot.ImageURL, spotID)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Fprintf(w, "spot was updated")
+}
+
+func deletespot(w http.ResponseWriter, r *http.Request) {
+	spotID := mux.Vars(r)["id"]
+
+	// on exécute une requête SQL pour supprimer l'élément 
+	// (c'est court donc j'ai test d'exécuter la requête sans passer par l'étape db.Prepare ça marche)
+	_, err := db.Exec("DELETE FROM spots WHERE idspot = ?", spotID)
+	if err != nil {
+		panic(err.Error())
+	}
+	
+	fmt.Fprintf(w, "The spots with ID %v has been deleted successfully", spotID)
+	}
 
 
 // // on crée un objet db et un objet erreur
@@ -151,7 +170,7 @@ func main() {
 	// jusqu'à ce que qu'on ait fini.
 	// attention "Root5003" est le mot de passe de mon serveur SQl, à remplacer par le votre
 	// dans l'idéal ce serait une variable d'env
-	db, err = sql.Open("mysql", "root:password@tcp(127.0.0.1:3306)/spooky_spot")
+	db, err = sql.Open("mysql", "root:Root5003@tcp(127.0.0.1:3306)/spooky_spot")
 	if err != nil {
 		panic(err.Error())
 	} else {
