@@ -134,7 +134,7 @@ func updatespot(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &spot)
 
 	// on prépare la requête SQL avec des placeholders "?"
-	stmt, err := db.Prepare("UPDATE spots SET name = ?, description = ?, city = ?, country = ?, longitude = ?, latitude = ?, image_url = ? WHERE idspot = ?")
+	stmt, err := db.Prepare("UPDATE spot SET name = ?, description = ?, city = ?, country = ?, longitude = ?, latitude = ?, image_url = ? WHERE idspot = ?")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -152,7 +152,7 @@ func deletespot(w http.ResponseWriter, r *http.Request) {
 
 	// on exécute une requête SQL pour supprimer l'élément 
 	// (c'est court donc j'ai test d'exécuter la requête sans passer par l'étape db.Prepare ça marche)
-	_, err := db.Exec("DELETE FROM spots WHERE idspot = ?", spotID)
+	_, err := db.Exec("DELETE FROM spot WHERE idspot = ?", spotID)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -183,7 +183,7 @@ func main() {
 	router.HandleFunc("/spots", getAllspots).Methods("GET")
 	router.HandleFunc("/spot/{id}", getOnespot).Methods("GET")
 	router.HandleFunc("/list", getList).Methods("GET")
-	// router.HandleFunc("/spots/{id}", updatespot).Methods("PATCH")
-	// router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
+	router.HandleFunc("/spots/{id}", updatespot).Methods("PATCH")
+	router.HandleFunc("/spots/{id}", deletespot).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
